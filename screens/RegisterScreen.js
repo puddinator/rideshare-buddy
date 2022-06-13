@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native'
 import { auth } from '../firebase';
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     const navigation = useNavigation()
 
@@ -19,16 +20,20 @@ const LoginScreen = () => {
         return unsubscribe
     }, [])
 
-    const handleSignUp = () => {
-        navigation.replace("Register")
+    const backToLogin = () => {
+        navigation.replace("Login")
     }
 
-    const handleLogin = () => {
+    const checkPasswordSame = () => {
+        return password === confirmPassword;
+    }
+
+    const handleSignUpAndLogin = () => {
         auth
-            .signInWithEmailAndPassword(email, password)
+            .createUserWithEmailAndPassword(email, password)
             .then(userCredentials => {
                 const user = userCredentials.user;
-                console.log('Logged in with:', user.email);
+                console.log('Registered and logged in with:', user.email);
             })
             .catch(error => alert(error.message))
     }
@@ -52,27 +57,35 @@ const LoginScreen = () => {
                     style={styles.input}
                     secureTextEntry
                 />
+                <TextInput
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChangeText={text => setConfirmPassword(text)}
+                    style={styles.input}
+                    secureTextEntry
+                />
             </View>
 
             <View style={styles.buttonContainer}>
                 <TouchableOpacity
-                    onPress={handleSignUp}
+                    onPress={backToLogin}
                     style={[styles.button, styles.buttonOutline]}
                 >
-                    <Text style={styles.buttonOutlineText}>Register</Text>
+                    <Text style={styles.buttonOutlineText}>Login Instead</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                    onPress={handleLogin}
+                    onPress={handleSignUpAndLogin}
                     style={styles.button}
+                    disabled={!checkPasswordSame}
                 >
-                    <Text style={styles.buttonText}>Login</Text>
+                    <Text style={styles.buttonText}>Create Account</Text>
                 </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
     )
 }
 
-export default LoginScreen
+export default RegisterScreen
 
 const styles = StyleSheet.create({
     container: {
@@ -91,7 +104,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     buttonContainer: {
-        width: '60%',
+        width: '80%',
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 20,
