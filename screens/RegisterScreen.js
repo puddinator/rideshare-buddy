@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Image } from 'react-native'
 import { auth } from '../firebase';
 
 const RegisterScreen = () => {
@@ -13,10 +13,9 @@ const RegisterScreen = () => {
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged(user => {
             if (user) {
-                navigation.replace("Home")
+                navigation.replace("ProfileSetup")
             }
         })
-
         return unsubscribe
     }, [])
 
@@ -39,10 +38,11 @@ const RegisterScreen = () => {
     }
 
     return (
-        <KeyboardAvoidingView
+        <View
             style={styles.container}
             behavior="padding"
         >
+            <Image style={styles.userImg} source={require('../assets/logo.png')}/>
             <View style={styles.inputContainer}>
                 <TextInput
                     placeholder="Email"
@@ -81,13 +81,18 @@ const RegisterScreen = () => {
                     <Text style={styles.buttonText}>Create Account</Text>
                 </TouchableOpacity>
             </View>
-        </KeyboardAvoidingView>
+        </View>
     )
 }
 
 export default RegisterScreen
 
 const styles = StyleSheet.create({
+    logoImg: {
+        width: 200,
+        height: 200,
+        marginBottom: 20,
+    },
     container: {
         flex: 1,
         justifyContent: 'center',

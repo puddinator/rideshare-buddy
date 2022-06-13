@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/core';
 import React, { useEffect, useState } from 'react'
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Image } from 'react-native'
 import { auth } from '../firebase';
 
 const LoginScreen = () => {
@@ -34,10 +34,11 @@ const LoginScreen = () => {
     }
 
     return (
-        <KeyboardAvoidingView
+        <View
             style={styles.container}
             behavior="padding"
         >
+            <Image style={styles.logoImg} source={require('../assets/logo.png')}/>
             <View style={styles.inputContainer}>
                 <TextInput
                     placeholder="Email"
@@ -68,13 +69,18 @@ const LoginScreen = () => {
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
             </View>
-        </KeyboardAvoidingView>
+        </View>
     )
 }
 
 export default LoginScreen
 
 const styles = StyleSheet.create({
+    logoImg: {
+        width: 200,
+        height: 200,
+        marginBottom: 20,
+    },
     container: {
         flex: 1,
         justifyContent: 'center',
