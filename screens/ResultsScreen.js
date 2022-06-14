@@ -4,31 +4,10 @@ import { StyleSheet, Text, TouchableOpacity, View, Image, TouchableHighlight, Te
 import { auth, db } from '../firebase'
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-db.collection("cities").doc("SF")
-  .onSnapshot((doc) => {
-    console.log("Current data: ", doc.data());
-  });
+import ResultItem from '../components/ResultItem';
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-];
-
-const Item = ({ title }) => (
-  <View style={styles.item}>
-    <Text style={styles.title}>{title}</Text>
-  </View>
-);
+let allRideOffers = [];
+let allRideRequests = [];
 
 const ResultsScreen = () => {
   const navigation = useNavigation()
@@ -37,9 +16,24 @@ const ResultsScreen = () => {
     navigation.replace("Home")
   }
 
-  const renderItem = ({ item }) => (
-    <Item title={item.title} />
-  );
+
+
+  useEffect(() => {
+    allRideOffers = [];
+    allRideRequests = [];
+
+    db.collection("rides").get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        let data = doc.data();
+        data['id'] = doc.id;
+        if (data.type === "request") {
+          allRideRequests.push(data);
+        } else {
+          allRideOffers.push(data);
+        }
+      });
+    });
+  }, [])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -55,41 +49,53 @@ const ResultsScreen = () => {
           <Text style={styles.reloadImg}> o </Text>
         </View>
         <View style={styles.summaryContainer}>
-          <Text>Kranji Camp</Text>
-          <Text> -> </Text>
-          <Text>Bishan Blk...</Text>
-          <Text> at </Text>
-          <Text>0800</Text>
+          <Text style={{ marginHorizontal: 5 }}>Kranji Camp</Text>
+          <Text style={{ marginHorizontal: 5 }}> to </Text>
+          <Text style={{ marginHorizontal: 5 }}>Bishan Blk...</Text>
+          <Text style={{ marginHorizontal: 5 }}> at </Text>
+          <Text style={{ marginHorizontal: 5 }}>0800</Text>
         </View>
         <View style={styles.toolContainer}>
-          <Text>Filter</Text>
-          <Text>Sort by:</Text>
-          <Text>Time</Text>
-          <Text>Distance</Text>
+          <Text style={{ marginHorizontal: 5 }}>Filter</Text>
+          <Text style={{ marginHorizontal: 5 }}>Sort by:</Text>
+          <Text style={{ marginHorizontal: 5 }}>Time</Text>
+          <Text style={{ marginHorizontal: 5 }}>Distance</Text>
         </View>
       </View>
 
-      <View style={styles.listContainer}>
-        <FlatList
-          data={DATA}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-        />
-        <FlatList
-          data={courseGoals}
-          renderItem={itemData => {
-            return (
-              <GoalItem
-                text={itemData.item.text}
-                id={itemData.item.id}
-                onDeleteItem={deleteGoalHandler}
-              />
-            );
-          }}
-          keyExtractor={(item, index) => {
-            return item.id;
-          }}
-        />
+      <View style={styles.bodyContainer}>
+        <View style={{flex: 1}}>
+          <Text style={{ fontSize: 20, }}>Ride Offers</Text>
+          <View style={styles.listContainer}>
+            <FlatList
+              data={allRideOffers}
+              renderItem={itemData => {
+                let item = itemData.item;
+                return (
+                  <ResultItem name={item.name} start={item.start} end={item.end}
+                    time={item.time} number={item.number} />
+                );
+              }}
+              keyExtractor={item => item.id}
+            />
+          </View>
+        </View>
+        <View style={{flex: 1}}>
+          <Text style={{ fontSize: 20, }}>Looking for Rideshare</Text>
+          <View style={styles.listContainer}>
+            <FlatList
+              data={allRideRequests}
+              renderItem={itemData => {
+                let item = itemData.item;
+                return (
+                  <ResultItem name={item.name} start={item.start} end={item.end}
+                    time={item.time} number={item.number} />
+                );
+              }}
+              keyExtractor={item => item.id}
+            />
+          </View>
+        </View>
       </View>
     </SafeAreaView>
   )
@@ -105,7 +111,11 @@ const styles = StyleSheet.create({
   headerContainer: {
     alignItems: 'center',
     marginTop: 20,
-    marginHorizontal: 10,
+    paddingBottom: 20,
+    paddingHorizontal: 10,
+    borderBottomColor: '#dddddd',
+    borderBottomWidth: 2,
+    borderRadius: 10,
   },
   headerHeadingsContainer: {
     flexDirection: 'row',
@@ -127,18 +137,18 @@ const styles = StyleSheet.create({
   header: {
     flex: 1,
     textAlign: 'center',
+    fontWeight: '700',
     fontSize: 20,
-    fontWeight: 'bold',
   },
   summaryContainer: {
     flexDirection: 'row',
-
   },
   toolContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    marginTop: 10,
   },
   bodyContainer: {
-
+    flex: 1,
+    marginTop: 10,
   },
 })

@@ -13,6 +13,8 @@ const HomeScreen = () => {
   const [time, setTime] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [campAddress, setCampAddress] = useState('');
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
   const [userType, setUserType] = useState('');
 
   const redirectToProfile = () => {
@@ -36,6 +38,8 @@ const HomeScreen = () => {
         setHomeAddress(doc.data().address);
         setCampAddress(doc.data().camp);
         setUserType(doc.data().userType);
+        setName(doc.data().name);
+        setNumber(doc.data().number);
       } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
@@ -65,6 +69,8 @@ const HomeScreen = () => {
     }
     db.collection("rides").doc(auth.currentUser?.uid).set({
       type,
+      name,
+      number,
       start: 'placeholder',
       end: finalAddress,
       time,
@@ -78,7 +84,10 @@ const HomeScreen = () => {
     navigation.replace("Results")
   }
 
-  getInfo();
+  useEffect(() => {
+    getInfo();
+  }, [])
+
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity
