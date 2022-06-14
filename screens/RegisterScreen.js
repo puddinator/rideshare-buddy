@@ -42,7 +42,7 @@ const RegisterScreen = () => {
             style={styles.container}
             behavior="padding"
         >
-            <Image style={styles.userImg} source={require('../assets/logo.png')}/>
+            <Image style={styles.logoImg} source={require('../assets/logo.png')}/>
             <View style={styles.inputContainer}>
                 <TextInput
                     placeholder="Email"

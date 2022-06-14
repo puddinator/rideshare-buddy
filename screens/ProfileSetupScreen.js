@@ -1,23 +1,37 @@
 import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Image } from 'react-native'
-import SelectDropdown from 'react-native-select-dropdown'
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { auth, db } from '../firebase'
 
-const camps = ["Amoy Quee Camp", "Bedok Camp", "Clementi Camp", "Depot Road Camp",
-  "Dieppe Barracks", "Gombak Base", "Hendon Camp"]
 
 const ProfileSetupScreen = () => {
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState(null);
+  const [camps, setCamps] = useState([
+    { label: 'Amoy Quee Camp', value: 'Amoy Quee Camp' },
+    { label: 'Bedok Camp', value: 'Bedok Camp' },
+    { label: 'Clementi Camp', value: 'Clementi Camp' },
+    { label: 'Depot Road Camp', value: 'Depot Road Camp' },
+    { label: 'Depot Road Camp2', value: 'Depot Road Camp2' },
+    { label: 'Depot Road Camp3', value: 'Depot Road Camp3' },
+    { label: 'Depot Road Camp4', value: 'Depot Road Camp4' },
+  ]);
+
+  const [open2, setOpen2] = useState(false);
+  const [value2, setValue2] = useState('rider');
+
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
   const [address, setAddress] = useState('');
   const [camp, setCamp] = useState('');
+  const [userType, setUserType] = useState('');
 
   const navigation = useNavigation()
 
   const handleInfoUpdate = () => {
-    db.collection("users").doc(auth.currentUser?.uid).set({
+    db.collection('users').doc(auth.currentUser?.uid).set({
+      userType,
       name,
       number,
       address,
@@ -68,32 +82,48 @@ const ProfileSetupScreen = () => {
         </View>
         <View style={styles.inputContainer}>
           <Text>Military Camp:</Text>
-          <SelectDropdown
-            data={camps}
-            onSelect={camp => setCamp(camp)}
-            buttonTextAfterSelection={(selectedItem) => {
-              return selectedItem
-            }}
-            rowTextForSelection={(item) => {
-              return item
-            }}
-            defaultButtonText='Your military camp'
-            buttonStyle={styles.dropdownBtnStyle}
-            buttonTextStyle={styles.dropdownBtnTxtStyle}
-            renderDropdownIcon={isOpened => {
-              return <FontAwesome name={isOpened ? 'chevron-up' : 'chevron-down'} color={'#dddddd'} size={18} />;
-            }}
-            selectedRowTextStyle={styles.dropdownSelectedRowTextStyle}
-            dropdownIconPosition={'right'}
+          <DropDownPicker
+            open={open}
+            value={value}
+            items={camps}
+            setOpen={setOpen}
+            setValue={setValue}
+            setItems={setCamps}
+            style={styles.dropdownBox}
+            dropDownContainerStyle={styles.dropdownDroppedBox}
+            placeholder="Your camp"
+            placeholderStyle={{ color: '#aaaaaa' }}
+            containerStyle={{ width: 300 }}
+            zIndex={2000}
+            onChangeValue={value => setCamp(value)}
+          />
+        </View>
+        <View style={styles.inputContainerRow}>
+          <Text style={{ marginRight: 10 }}>I am a </Text>
+          <DropDownPicker
+            open={open2}
+            value={value2}
+            setOpen={setOpen2}
+            setValue={setValue2}
+            items={[
+              { label: 'Rider', value: 'rider' },
+              { label: 'Driver', value: 'driver' },
+            ]}
+            defaultValue={value2}
+            style={styles.dropdownBox}
+            containerStyle={{ width: 200 }}
+            dropDownContainerStyle={styles.dropdownDroppedBox}
+            zIndex={1000}
+            onChangeValue={value => setUserType(value)}
           />
         </View>
 
-        <View style={styles.buttonContainer}>
+        <View>
           <TouchableOpacity
             onPress={handleInfoUpdate}
             style={[styles.button]}
           >
-            <Text style={styles.buttonText}>Save</Text>
+            <Text style={styles.buttonText}>Sign up</Text>
           </TouchableOpacity>
         </View>
 
@@ -122,8 +152,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   inputContainer: {
-    width: 300,
     marginVertical: 5,
+  },
+  inputContainerRow: {
+    marginTop: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   input: {
     backgroundColor: 'white',
@@ -131,21 +165,14 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
-  },
-  dropdownBtnStyle: {
     width: 300,
-    height: 50,
-    backgroundColor: 'white',
-    borderRadius: 10,
+  },
+  dropdownBox: {
     marginTop: 5,
+    borderColor: 'white',
   },
-  dropdownBtnTxtStyle: { 
-    color: 'black', 
-    textAlign: 'left',
-    fontSize: 15,
-  },
-  dropdownSelectedRowTextStyle: {
-    color: 'black', 
+  dropdownDroppedBox: {
+    borderColor: 'white',
   },
   button: {
     backgroundColor: '#cccccc',

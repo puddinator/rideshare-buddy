@@ -13,41 +13,44 @@ const HomeScreen = () => {
   const [time, setTime] = useState('');
   const [homeAddress, setHomeAddress] = useState('');
   const [campAddress, setCampAddress] = useState('');
-  const [finalAddress, setFinalAddress] = useState('');
+  const [userType, setUserType] = useState('');
 
   const redirectToProfile = () => {
-    navigation.replace("ProfileScreen")
+    navigation.replace("Profile")
   }
 
   function handleHome() {
     setIsHome(true);
     setIsCamp(false);
-    getAddress();
   }
 
   function handleCamp() {
     setIsCamp(true);
     setIsHome(false);
-    getAddress();
   }
 
-  function getAddress() {
+  function getInfo() {
     // Gets home or camp address
     db.collection("users").doc(auth.currentUser?.uid).get().then((doc) => {
       if (doc.exists) {
         setHomeAddress(doc.data().address);
         setCampAddress(doc.data().camp);
+        setUserType(doc.data().userType);
       } else {
         // doc.data() will be undefined in this case
         console.log("No such document!");
       }
-    }).catch((error) => {
-      console.log("Error getting document:", error);
-    });
+    })
+      .then(() => {
+        console.log(userType);
+      })
+      .catch((error) => {
+        console.log("Error getting document:", error);
+      });
   }
 
   const findMatches = () => {
-    let finalAddress = '';
+    let finalAddress = '', type = '';
     if (isCamp === true) {
       finalAddress = campAddress;
     } else if (isHome === true) {
@@ -55,8 +58,13 @@ const HomeScreen = () => {
     } else {
       finalAddress = address;
     }
-
+    if (userType === 'rider') {
+      type = 'request';
+    } else {
+      type = 'offer';
+    }
     db.collection("rides").doc(auth.currentUser?.uid).set({
+      type,
       start: 'placeholder',
       end: finalAddress,
       time,
@@ -70,6 +78,7 @@ const HomeScreen = () => {
     navigation.replace("Results")
   }
 
+  getInfo();
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity
@@ -127,7 +136,7 @@ const HomeScreen = () => {
             onPress={findMatches}
             style={[styles.button]}
           >
-            <Text style={styles.buttonText}>Find!</Text>
+            <Text style={styles.buttonText}>Let's go!</Text>
           </TouchableOpacity>
         </View>
 
@@ -145,7 +154,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   profileImgButton: {
-    marginTop: 40,
+    marginTop: 20,
     marginLeft: 30,
     alignSelf: 'flex-start',
     borderWidth: 2,

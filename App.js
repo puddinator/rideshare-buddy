@@ -5,11 +5,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import LoginScreen from './screens/LoginScreen';
-import HomeScreen from './screens/HomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import ProfileSetupScreen from './screens/ProfileSetupScreen';
 import ResultsScreen from './screens/ResultsScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import HomeScreen from './screens/HomeScreen';
 
 
 const Stack = createNativeStackNavigator();
