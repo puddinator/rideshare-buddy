@@ -1,42 +1,219 @@
 import { useNavigation } from '@react-navigation/core'
-import React from 'react'
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { auth } from '../firebase'
+import React, { useEffect, useState } from 'react'
+import { StyleSheet, Text, TouchableOpacity, View, Image, TouchableHighlight, TextInput } from 'react-native'
+import { auth, db } from '../firebase'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const HomeScreen = () => {
   const navigation = useNavigation()
 
-  const handleSignOut = () => {
-    auth
-      .signOut()
+  const [isHome, setIsHome] = useState(false);
+  const [isCamp, setIsCamp] = useState(false);
+  const [address, setAddress] = useState('');
+  const [time, setTime] = useState('');
+  const [homeAddress, setHomeAddress] = useState('');
+  const [campAddress, setCampAddress] = useState('');
+  const [finalAddress, setFinalAddress] = useState('');
+
+  const redirectToProfile = () => {
+    navigation.replace("ProfileScreen")
+  }
+
+  function handleHome() {
+    setIsHome(true);
+    setIsCamp(false);
+    getAddress();
+  }
+
+  function handleCamp() {
+    setIsCamp(true);
+    setIsHome(false);
+    getAddress();
+  }
+
+  function getAddress() {
+    // Gets home or camp address
+    db.collection("users").doc(auth.currentUser?.uid).get().then((doc) => {
+      if (doc.exists) {
+        setHomeAddress(doc.data().address);
+        setCampAddress(doc.data().camp);
+      } else {
+        // doc.data() will be undefined in this case
+        console.log("No such document!");
+      }
+    }).catch((error) => {
+      console.log("Error getting document:", error);
+    });
+  }
+
+  const findMatches = () => {
+    let finalAddress = '';
+    if (isCamp === true) {
+      finalAddress = campAddress;
+    } else if (isHome === true) {
+      finalAddress = homeAddress;
+    } else {
+      finalAddress = address;
+    }
+
+    db.collection("rides").doc(auth.currentUser?.uid).set({
+      start: 'placeholder',
+      end: finalAddress,
+      time,
+    })
       .then(() => {
-        navigation.replace("Login")
+        console.log("Document successfully written!");
       })
-      .catch(error => alert(error.message))
+      .catch((error) => {
+        console.error("Error writing document: ", error);
+      });
+    navigation.replace("Results")
   }
 
   return (
-    <View style={styles.container}>
-      <Text>Email: {auth.currentUser?.email}</Text>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity
-        onPress={handleSignOut}
-        style={styles.button}
+        onPress={redirectToProfile}
+        style={[styles.profileImgButton]}
       >
-        <Text style={styles.buttonText}>Sign out</Text>
+        <Image style={styles.profileImg} source={require('../assets/pictures/profile.png')} />
       </TouchableOpacity>
-    </View>
+      <View style={styles.bodyContainer}>
+        <Text style={styles.header}>Where are you heading to?</Text>
+
+        <View style={styles.homeCampInputContainer}>
+          <TouchableOpacity
+            style={isHome ? styles.btnPress : styles.btnNormal}
+            onPress={handleHome}
+          >
+            <View style={styles.imgContainer}>
+              <Image style={styles.homeCampImg} source={require('../assets/pictures/home.png')} />
+              <Text>Home</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={isCamp ? styles.btnPress : styles.btnNormal}
+            onPress={handleCamp}
+          >
+            <View style={styles.imgContainer}>
+              <Image style={styles.homeCampImg} source={require('../assets/pictures/camp.png')} />
+              <Text>Camp</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.inputAddressContainer}>
+          <TextInput
+            placeholder="Search for another destination"
+            value={address}
+            onChangeText={text => setAddress(text)}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.inputTimeContainer}>
+          <Text>Time of departure:</Text>
+          <TextInput
+            placeholder="24-hour Time"
+            value={time}
+            onChangeText={text => setTime(text)}
+            style={styles.input}
+          />
+        </View>
+
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            onPress={findMatches}
+            style={[styles.button]}
+          >
+            <Text style={styles.buttonText}>Find!</Text>
+          </TouchableOpacity>
+        </View>
+
+      </View>
+    </SafeAreaView >
   )
 }
+
 
 export default HomeScreen
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center'
   },
-   button: {
+  profileImgButton: {
+    marginTop: 40,
+    marginLeft: 30,
+    alignSelf: 'flex-start',
+    borderWidth: 2,
+    borderColor: '#dddddd',
+    borderRadius: 10,
+    backgroundColor: '#eeeeee',
+  },
+  profileImg: {
+    margin: 7,
+  },
+  bodyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    marginTop: -40,
+  },
+  header: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontWeight: '700',
+    fontSize: 20,
+  },
+  homeCampInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  btnNormal: {
+    backgroundColor: '#eeeeee',
+  },
+  btnPress: {
+    backgroundColor: '#cccccc',
+    borderRadius: 10,
+  },
+  imgContainer: {
+    borderWidth: 2,
+    borderColor: '#dddddd',
+    borderRadius: 10,
+    // backgroundColor: '#eeeeee',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+  },
+  homeCampImg: {
+    marginBottom: 5,
+    width: 30,
+    height: 30,
+  },
+  inputAddressContainer: {
+    height: 40,
+  },
+  inputTimeContainer: {
+    height: 50,
+    marginTop: 20,
+  },
+  input: {
+    backgroundColor: 'white',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 5,
+  },
+  buttonContainer: {
+    alignItems: 'center',
+  },
+  button: {
     backgroundColor: '#0782F9',
     width: '60%',
     padding: 15,

@@ -8,7 +8,7 @@ import { auth, db } from '../firebase'
 const camps = ["Amoy Quee Camp", "Bedok Camp", "Clementi Camp", "Depot Road Camp",
   "Dieppe Barracks", "Gombak Base", "Hendon Camp"]
 
-const ProfileSetupScreen = () => {
+const ProfileScreen = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
   const [address, setAddress] = useState('');
@@ -30,6 +30,15 @@ const ProfileSetupScreen = () => {
         console.error("Error writing document: ", error);
       });
     navigation.replace("Home")
+  }
+
+  const handleSignOut = () => {
+    auth
+      .signOut()
+      .then(() => {
+        navigation.replace("Login")
+      })
+      .catch(error => alert(error.message))
   }
 
   return (
@@ -98,11 +107,20 @@ const ProfileSetupScreen = () => {
         </View>
 
       </View>
+
+      <Text>Email: {auth.currentUser?.email}</Text>
+      <TouchableOpacity
+        onPress={handleSignOut}
+        style={styles.button}
+      >
+        <Text style={styles.buttonText}>Sign out</Text>
+      </TouchableOpacity>
+
     </View>
   )
 }
 
-export default ProfileSetupScreen
+export default ProfileScreen
 
 const styles = StyleSheet.create({
   container: {
@@ -139,13 +157,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 5,
   },
-  dropdownBtnTxtStyle: { 
-    color: 'black', 
+  dropdownBtnTxtStyle: {
+    color: 'black',
     textAlign: 'left',
     fontSize: 15,
   },
   dropdownSelectedRowTextStyle: {
-    color: 'black', 
+    color: 'black',
   },
   button: {
     backgroundColor: '#cccccc',
