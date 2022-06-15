@@ -54,12 +54,15 @@ const HomeScreen = () => {
   }
 
   const findMatches = () => {
-    let finalAddress = '', type = '';
+    let startAddress = '', finalAddress = '', type = '';
     if (isCamp === true) {
+      startAddress = homeAddress;
       finalAddress = campAddress;
     } else if (isHome === true) {
+      startAddress = campAddress;
       finalAddress = homeAddress;
     } else {
+      startAddress = campAddress;
       finalAddress = address;
     }
     if (userType === 'rider') {
@@ -71,7 +74,7 @@ const HomeScreen = () => {
       type,
       name,
       number,
-      start: 'placeholder',
+      start: startAddress,
       end: finalAddress,
       time,
     })

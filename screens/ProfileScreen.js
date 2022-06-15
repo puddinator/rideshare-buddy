@@ -26,7 +26,7 @@ const ProfileScreen = () => {
         onPress={redirectToHome}
         style={[styles.cancelXPress]}
       >
-        <Text style={styles.cancelX}>X</Text>
+        <Image style={styles.closeImg} source={require('../assets/pictures/close.png')} />
       </TouchableOpacity>
 
       <View style={styles.bodyContainer}>
@@ -49,6 +49,11 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  closeImg: {
+    height: 22,
+    width: 22,
+    margin: 10,
+  },
   cancelXPress: {
     marginTop: 20,
     marginLeft: 30,
@@ -59,8 +64,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#eeeeee',
   },
   cancelX: {
-    marginVertical: 7,
-    marginHorizontal: 14,
+
     fontSize: 25,
   },
   bodyContainer: {

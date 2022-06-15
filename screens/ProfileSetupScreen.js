@@ -13,9 +13,11 @@ const ProfileSetupScreen = () => {
     { label: 'Bedok Camp', value: 'Bedok Camp' },
     { label: 'Clementi Camp', value: 'Clementi Camp' },
     { label: 'Depot Road Camp', value: 'Depot Road Camp' },
-    { label: 'Depot Road Camp2', value: 'Depot Road Camp2' },
-    { label: 'Depot Road Camp3', value: 'Depot Road Camp3' },
-    { label: 'Depot Road Camp4', value: 'Depot Road Camp4' },
+    { label: 'Dieppe Barracks', value: 'Dieppe Barracks' },
+    { label: 'Gombak Base', value: 'Gombak Base' },
+    { label: 'Hendon Camp', value: 'Hendon Camp' },
+    { label: 'Jurong Camp', value: 'Jurong Camp' },
+    { label: 'Kaki Bukit Camp', value: 'Kaki Bukit Camp' },
   ]);
 
   const [open2, setOpen2] = useState(false);
@@ -49,10 +51,10 @@ const ProfileSetupScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your details</Text>
+      <TouchableOpacity style={styles.profileImgContainer}>
+        <Image style={styles.profileImg} source={require('../assets/pictures/profile.png')} />
+      </TouchableOpacity>
       <View style={styles.bodyContainer}>
-        <Image style={styles.userImg} />
-        <Text>Image</Text>
-
         <View style={styles.inputContainer}>
           <Text>Name:</Text>
           <TextInput
@@ -139,6 +141,17 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
+  profileImgContainer: {
+    padding: 20,
+    borderWidth: 2,
+    borderRadius: 100,
+    borderColor: '#dddddd',
+    marginVertical: 20,
+  },
+  profileImg: {
+    width: 50,
+    height: 50,
+  },
   header: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -148,7 +161,7 @@ const styles = StyleSheet.create({
   },
   bodyContainer: {
     flex: 1,
-    justifyContent: 'center',
+    // justifyContent: 'center',
     alignItems: 'center',
   },
   inputContainer: {
