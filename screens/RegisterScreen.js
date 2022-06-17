@@ -78,7 +78,7 @@ const RegisterScreen = () => {
                     style={styles.button}
                     disabled={!checkPasswordSame}
                 >
-                    <Text style={styles.buttonText}>Create Account</Text>
+                    <Text style={[styles.buttonText, styles.noOutlineOutline ]}>Create Account</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -125,7 +125,11 @@ const styles = StyleSheet.create({
     },
     buttonOutline: {
         backgroundColor: 'white',
-        marginTop: 5,
+        // marginTop: 5,
+        borderColor: '#0782F9',
+        borderWidth: 1.5,
+    },
+    noOutlineOutline: {
         borderColor: '#0782F9',
         borderWidth: 2,
     },

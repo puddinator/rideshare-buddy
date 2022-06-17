@@ -9,11 +9,13 @@ function ResultItem(props) {
     handlePress = () => {
         Linking.openURL(`whatsapp://send?text=Hello!&phone=65${props.number}`);
     };
-
     return (
         <>
             <TouchableOpacity style={styles.goalItem} onPress={() => setModalVisible(true)}>
-                <Image style={styles.profileImg} source={require('../assets/pictures/profile.png')} />
+                {props.imgURL != undefined ? (
+                    <Image style={styles.profileImg} source={{ uri: props.imgURL }} />
+                ) : <Image style={styles.profileImg} source={require('../assets/pictures/profileBordered.png')} />}
+                {/* <Image style={styles.profileImg} source={{ uri: props.imgURL }} /> */}
                 <Text style={styles.name}>{props.name}</Text>
                 <Text style={styles.time}>{props.time}</Text>
                 <View style={styles.locations}>
@@ -61,7 +63,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     profileImg: {
-        marginRight:10,
+        marginRight: 10,
+        height: 40,
+        width: 40,
+        borderRadius: 100,
+        borderWidth: 1,
+        borderColor: 'grey',
     },
     name: {
         marginHorizontal: 10,
@@ -113,7 +120,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginVertical: 5,
     },
-    numberText:{
+    numberText: {
         textDecorationLine: 'underline',
         color: '#3e64cf',
     },

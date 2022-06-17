@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "rideshare-buddy",
+    "name": "Rideshare Buddy",
     "slug": "rideshare-buddy",
-    "version": "1.0.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.rideshare.ridesharebuddy"

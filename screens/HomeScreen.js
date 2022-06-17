@@ -42,6 +42,7 @@ const HomeScreen = () => {
         setNumber(doc.data().number);
       } else {
         // doc.data() will be undefined in this case
+        navigation.replace("ProfileSetup");
         console.log("No such document!");
       }
     })
@@ -218,11 +219,11 @@ const styles = StyleSheet.create({
     height: 30,
   },
   inputAddressContainer: {
-    height: 40,
+    height: 39,
   },
   inputTimeContainer: {
-    height: 50,
-    marginTop: 20,
+    height: 45,
+    marginTop: 25,
   },
   input: {
     backgroundColor: 'white',

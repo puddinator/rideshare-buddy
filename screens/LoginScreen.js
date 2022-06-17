@@ -38,7 +38,7 @@ const LoginScreen = () => {
             style={styles.container}
             behavior="padding"
         >
-            <Image style={styles.logoImg} source={require('../assets/logo.png')}/>
+            <Image style={styles.logoImg} source={require('../assets/logo.png')} />
             <View style={styles.inputContainer}>
                 <TextInput
                     placeholder="Email"
@@ -64,11 +64,17 @@ const LoginScreen = () => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     onPress={handleLogin}
-                    style={styles.button}
+                    style={[styles.button, styles.noOutlineOutline ]}
                 >
                     <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
             </View>
+
+            <TouchableOpacity
+                style={{ marginTop: 25, }}
+            >
+                <Text style={{ color: '#0782F9', fontWeight: '700', }}>Forgot Password?</Text>
+            </TouchableOpacity>
         </View>
     )
 }
@@ -113,7 +119,11 @@ const styles = StyleSheet.create({
     },
     buttonOutline: {
         backgroundColor: 'white',
-        marginTop: 5,
+        // marginTop: 5,
+        borderColor: '#0782F9',
+        borderWidth: 2,
+    },
+    noOutlineOutline: {
         borderColor: '#0782F9',
         borderWidth: 2,
     },

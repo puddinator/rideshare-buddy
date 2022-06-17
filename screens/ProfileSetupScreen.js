@@ -2,8 +2,9 @@ import { useNavigation } from '@react-navigation/core'
 import React, { useEffect, useState } from 'react'
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity, Image } from 'react-native'
 import DropDownPicker from 'react-native-dropdown-picker';
-import { auth, db } from '../firebase'
+import { auth, db, storage } from '../firebase'
 
+import UploadImage from '../components/UploadImage';
 
 const ProfileSetupScreen = () => {
   const [open, setOpen] = useState(false);
@@ -29,7 +30,37 @@ const ProfileSetupScreen = () => {
   const [camp, setCamp] = useState('');
   const [userType, setUserType] = useState('');
 
+  const [imgURI, setImgURI] = useState('');
+
   const navigation = useNavigation()
+
+  async function uploadImage() {
+    const { uri } = imgURI;
+
+    const blob = await new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onload = function () {
+        resolve(xhr.response);
+      };
+      xhr.onerror = function (e) {
+        console.log(e);
+        reject(new TypeError("Network request failed"));
+      };
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
+      xhr.send(null);
+    });
+
+    const task = storage
+      .ref(auth.currentUser?.uid)
+      .put(blob)
+      .then((uri) => {
+        // console.log(uri);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   const handleInfoUpdate = () => {
     db.collection('users').doc(auth.currentUser?.uid).set({
@@ -51,84 +82,87 @@ const ProfileSetupScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Your details</Text>
-      <TouchableOpacity style={styles.profileImgContainer}>
-        <Image style={styles.profileImg} source={require('../assets/pictures/profile.png')} />
-      </TouchableOpacity>
-      <View style={styles.bodyContainer}>
-        <View style={styles.inputContainer}>
-          <Text>Name:</Text>
-          <TextInput
-            placeholder="Your name (as in NRIC)"
-            value={name}
-            onChangeText={text => setName(text)}
-            style={styles.input}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text>H/P:</Text>
-          <TextInput
-            placeholder="Your mobile number"
-            value={number}
-            onChangeText={text => setNumber(text)}
-            style={styles.input}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text>Home Address:</Text>
-          <TextInput
-            placeholder="Your home address"
-            value={address}
-            onChangeText={text => setAddress(text)}
-            style={styles.input}
-          />
-        </View>
-        <View style={styles.inputContainer}>
-          <Text>Military Camp:</Text>
-          <DropDownPicker
-            open={open}
-            value={value}
-            items={camps}
-            setOpen={setOpen}
-            setValue={setValue}
-            setItems={setCamps}
-            style={styles.dropdownBox}
-            dropDownContainerStyle={styles.dropdownDroppedBox}
-            placeholder="Your camp"
-            placeholderStyle={{ color: '#aaaaaa' }}
-            containerStyle={{ width: 300 }}
-            zIndex={2000}
-            onChangeValue={value => setCamp(value)}
-          />
-        </View>
-        <View style={styles.inputContainerRow}>
-          <Text style={{ marginRight: 10 }}>I am a </Text>
-          <DropDownPicker
-            open={open2}
-            value={value2}
-            setOpen={setOpen2}
-            setValue={setValue2}
-            items={[
-              { label: 'Rider', value: 'rider' },
-              { label: 'Driver', value: 'driver' },
-            ]}
-            defaultValue={value2}
-            style={styles.dropdownBox}
-            containerStyle={{ width: 200 }}
-            dropDownContainerStyle={styles.dropdownDroppedBox}
-            zIndex={1000}
-            onChangeValue={value => setUserType(value)}
-          />
-        </View>
+      <View style={styles.imageAndBodyContainer}>
+        <UploadImage setImgURI={setImgURI} />
+        <View style={styles.bodyContainer}>
+          <View style={styles.inputContainer}>
+            <Text>Name:</Text>
+            <TextInput
+              placeholder="Your name (as in NRIC)"
+              value={name}
+              onChangeText={text => {
+                setName(text);
+                uploadImage();
+              }}
+              style={styles.input}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text>H/P:</Text>
+            <TextInput
+              keyboardType='numeric'
+              placeholder="Your mobile number"
+              value={number}
+              onChangeText={text => setNumber(text)}
+              style={styles.input}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text>Home Address:</Text>
+            <TextInput
+              placeholder="Your home address"
+              value={address}
+              onChangeText={text => setAddress(text)}
+              style={styles.input}
+            />
+          </View>
+          <View style={styles.inputContainer}>
+            <Text>Military Camp:</Text>
+            <DropDownPicker
+              open={open}
+              value={value}
+              items={camps}
+              setOpen={setOpen}
+              setValue={setValue}
+              setItems={setCamps}
+              style={styles.dropdownBox}
+              dropDownContainerStyle={styles.dropdownDroppedBox}
+              placeholder="Your camp"
+              placeholderStyle={{ color: '#aaaaaa' }}
+              containerStyle={{ width: 300, flexDirection: 'row' }}
+              zIndex={2000}
+              onChangeValue={value => setCamp(value)}
+            />
+          </View>
+          <View style={styles.inputContainerRow}>
+            <Text style={{ marginRight: 10 }}>I am a </Text>
+            <DropDownPicker
+              open={open2}
+              value={value2}
+              setOpen={setOpen2}
+              setValue={setValue2}
+              items={[
+                { label: 'Rider', value: 'rider' },
+                { label: 'Driver', value: 'driver' },
+              ]}
+              defaultValue={value2}
+              style={styles.dropdownBox}
+              containerStyle={{ width: 200 }}
+              dropDownContainerStyle={styles.dropdownDroppedBox}
+              zIndex={1000}
+              onChangeValue={value => setUserType(value)}
+            />
+          </View>
 
-        <View>
-          <TouchableOpacity
-            onPress={handleInfoUpdate}
-            style={[styles.button]}
-          >
-            <Text style={styles.buttonText}>Sign up</Text>
-          </TouchableOpacity>
+          <View>
+            <TouchableOpacity
+              onPress={handleInfoUpdate}
+              style={[styles.button]}
+            >
+              <Text style={styles.buttonText}>Sign up</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-
       </View>
     </View>
   )
@@ -141,16 +175,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  profileImgContainer: {
-    padding: 20,
-    borderWidth: 2,
-    borderRadius: 100,
-    borderColor: '#dddddd',
-    marginVertical: 20,
-  },
-  profileImg: {
-    width: 50,
-    height: 50,
+  imageAndBodyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     justifyContent: 'center',
@@ -160,7 +188,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   bodyContainer: {
-    flex: 1,
+    // flex: 1,
     // justifyContent: 'center',
     alignItems: 'center',
   },
