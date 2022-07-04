@@ -1,2 +1,2 @@
 # rideshare-buddy
-Rideshare matching service for NSF and NSmen
+Rideshare matching service for NSF and NSmen: React Native
